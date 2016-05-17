@@ -202,7 +202,8 @@ public class ServerContainerInitializeListener implements ServletContextListener
 
             @Override
             public boolean isUserInRole(String role) {
-                return subject.isMemberOf(role);
+                //TODO Check that everything is working
+                return false;
             }
 
             @Override

@@ -40,7 +40,6 @@ import org.eclipse.che.api.machine.shared.dto.NewSnapshotDescriptor;
 import org.eclipse.che.api.machine.shared.dto.SnapshotDto;
 import org.eclipse.che.commons.env.EnvironmentContext;
 
-import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
@@ -79,6 +78,7 @@ import static org.eclipse.che.dto.server.DtoFactory.newDto;
  */
 @Api(value = "/machine", description = "Machine REST API")
 @Path("/machine")
+//TODO Cover with permissions
 public class MachineService extends Service {
     private MachineManager machineManager;
 
@@ -90,7 +90,6 @@ public class MachineService extends Service {
     @GET
     @Path("/{machineId}")
     @Produces(MediaType.APPLICATION_JSON)
-    @RolesAllowed("user")
     @ApiOperation(value = "Get machine by ID")
     @ApiResponses({@ApiResponse(code = 200, message = "The response contains requested machine entity"),
                    @ApiResponse(code = 404, message = "Machine with specified id does not exist"),
@@ -108,7 +107,6 @@ public class MachineService extends Service {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @RolesAllowed("user")
     @ApiOperation(value = "Get all machines of workspace with specified ID",
                   response = MachineDto.class,
                   responseContainer = "List")
@@ -135,7 +133,6 @@ public class MachineService extends Service {
     @DELETE
     @Path("/{machineId}")
     @Produces(MediaType.APPLICATION_JSON)
-    @RolesAllowed("user")
     @ApiOperation(value = "Destroy machine")
     @ApiResponses({@ApiResponse(code = 204, message = "Machine was successfully destroyed"),
                    @ApiResponse(code = 404, message = "Machine with specified id does not exist"),
@@ -153,7 +150,6 @@ public class MachineService extends Service {
     @GET
     @Path("/snapshot")
     @Produces(MediaType.APPLICATION_JSON)
-    @RolesAllowed("user")
     @ApiOperation(value = "Get all snapshots of machines in workspace",
                   response = SnapshotDto.class,
                   responseContainer = "List")
@@ -180,7 +176,6 @@ public class MachineService extends Service {
     @Path("/{machineId}/snapshot")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @RolesAllowed("user")
     @ApiOperation(value = "Save snapshot of machine")
     @ApiResponses({@ApiResponse(code = 200, message = "The response contains requested snapshot entity"),
                    @ApiResponse(code = 400, message = "Snapshot description is not specified"),
@@ -204,7 +199,6 @@ public class MachineService extends Service {
 
     @DELETE
     @Path("/snapshot/{snapshotId}")
-    @RolesAllowed("user")
     @ApiOperation(value = "Remove snapshot of machine")
     @ApiResponses({@ApiResponse(code = 204, message = "Snapshot was successfully removed"),
                    @ApiResponse(code = 404, message = "Snapshot with specified ID does not exist"),
@@ -222,7 +216,6 @@ public class MachineService extends Service {
     @POST
     @Path("/{machineId}/command")
     @Consumes(MediaType.APPLICATION_JSON)
-    @RolesAllowed("user")
     @ApiOperation(value = "Start specified command in machine")
     @ApiResponses({@ApiResponse(code = 200, message = "The response contains entity of created machine process"),
                    @ApiResponse(code = 400, message = "Command entity is invalid"),
@@ -249,7 +242,6 @@ public class MachineService extends Service {
     @GET
     @Path("/{machineId}/process")
     @Produces(MediaType.APPLICATION_JSON)
-    @RolesAllowed("user")
     @ApiOperation(value = "Get processes of machine",
                   response = MachineProcessDto.class,
                   responseContainer = "List")
@@ -272,7 +264,6 @@ public class MachineService extends Service {
 
     @DELETE
     @Path("/{machineId}/process/{processId}")
-    @RolesAllowed("user")
     @ApiOperation(value = "Stop process in machine")
     @ApiResponses({@ApiResponse(code = 204, message = "Process was successfully stopped"),
                    @ApiResponse(code = 404, message = "Machine with specified ID does not exist"),
@@ -293,7 +284,6 @@ public class MachineService extends Service {
     @GET
     @Path("/{machineId}/logs")
     @Produces(MediaType.TEXT_PLAIN)
-    @RolesAllowed("user")
     @ApiOperation(value = "Get logs of machine")
     @ApiResponses({@ApiResponse(code = 200, message = "The response contains logs"),
                    @ApiResponse(code = 404, message = "Machine with specified ID does not exist"),
@@ -314,7 +304,6 @@ public class MachineService extends Service {
     @GET
     @Path("/{machineId}/process/{pid}/logs")
     @Produces(MediaType.TEXT_PLAIN)
-    @RolesAllowed("user")
     @ApiOperation(value = "Get logs of machine process")
     @ApiResponses({@ApiResponse(code = 200, message = "The response contains logs"),
                    @ApiResponse(code = 404, message = "Machine or process with specified ID does not exist"),
@@ -351,7 +340,6 @@ public class MachineService extends Service {
     @GET
     @Path("/{machineId}/filepath/{path:.*}")
     @Produces(MediaType.TEXT_PLAIN)
-    @RolesAllowed("user")
     @ApiOperation(value = "Get content of file in machine")
     @ApiResponses({@ApiResponse(code = 200, message = "The response contains file content"),
                    @ApiResponse(code = 404, message = "Machine with specified ID does not exist"),
@@ -399,7 +387,6 @@ public class MachineService extends Service {
      */
     @POST
     @Path("/copy")
-    @RolesAllowed("user")
     @ApiOperation(value = "Copy files from one machine to another")
     @ApiResponses({@ApiResponse(code = 200, message = "Files were copied successfully"),
                    @ApiResponse(code = 400, message = "Machine ID or path is not specified"),

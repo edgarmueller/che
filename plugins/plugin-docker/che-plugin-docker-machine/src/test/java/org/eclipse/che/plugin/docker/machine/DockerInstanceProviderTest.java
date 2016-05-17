@@ -127,7 +127,7 @@ public class DockerInstanceProviderTest {
                                                                 Collections.emptySet()));
 
         EnvironmentContext envCont = new EnvironmentContext();
-        envCont.setSubject(new SubjectImpl(USER_NAME, "userId", USER_TOKEN, null, false));
+        envCont.setSubject(new SubjectImpl(USER_NAME, "userId", USER_TOKEN, false));
         envCont.setWorkspaceId(WORKSPACE_ID);
         EnvironmentContext.setCurrent(envCont);
 
