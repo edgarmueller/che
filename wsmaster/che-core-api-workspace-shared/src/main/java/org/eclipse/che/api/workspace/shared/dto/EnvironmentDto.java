@@ -11,12 +11,9 @@
 package org.eclipse.che.api.workspace.shared.dto;
 
 import org.eclipse.che.api.core.factory.FactoryParameter;
-import org.eclipse.che.api.core.model.machine.Recipe;
 import org.eclipse.che.api.core.model.workspace.Environment;
 import org.eclipse.che.api.machine.shared.dto.MachineConfigDto;
 import org.eclipse.che.dto.shared.DTO;
-import org.eclipse.che.dto.shared.DelegateRule;
-import org.eclipse.che.dto.shared.DelegateTo;
 
 import java.util.List;
 
@@ -35,6 +32,7 @@ public interface EnvironmentDto extends Environment {
 
     @Override
     @FactoryParameter(obligation = OPTIONAL)
+    @Deprecated
     RecipeDto getRecipe();
 
     void setRecipe(RecipeDto recipe);
@@ -43,24 +41,26 @@ public interface EnvironmentDto extends Environment {
 
     @Override
     @FactoryParameter(obligation = MANDATORY)
+    @Deprecated
     List<MachineConfigDto> getMachineConfigs();
-
-    @DelegateTo(client = @DelegateRule(type = DevMachineResolver.class, method = "getDevMachine"),
-                server = @DelegateRule(type = DevMachineResolver.class, method = "getDevMachine"))
-    MachineConfigDto devMachine();
 
     EnvironmentDto withMachineConfigs(List<MachineConfigDto> machineConfigs);
 
     void setMachineConfigs(List<MachineConfigDto> machineConfigs);
 
-    class DevMachineResolver {
-        public static MachineConfigDto getDevMachine(EnvironmentDto environmentDto) {
-            for (MachineConfigDto machineConfigDto : environmentDto.getMachineConfigs()) {
-                if (machineConfigDto.isDev()) {
-                    return machineConfigDto;
-                }
-            }
-            return null;
-        }
-    }
+    @Override
+    @FactoryParameter(obligation = MANDATORY)
+    String getType();
+
+    void setType(String type);
+
+    EnvironmentDto withType(String type);
+
+    @Override
+    @FactoryParameter(obligation = MANDATORY)
+    String getConfig();
+
+    void setConfig(String config);
+
+    EnvironmentDto withConfig(String config);
 }

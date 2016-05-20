@@ -169,6 +169,9 @@ public class WorkspaceRuntimes {
                                                    descriptor.getRuntimeStatus()));
             }
             descriptors.put(workspace.getId(), new RuntimeDescriptor(new WorkspaceRuntimeImpl(envName)));
+            // todo separate env start logic
+            // todo return machines list from env
+
             // Dev machine goes first in the start queue
             final List<MachineConfigImpl> machineConfigs = activeEnv.getMachineConfigs();
             final MachineConfigImpl devCfg = rmFirst(machineConfigs, MachineConfig::isDev);
@@ -218,6 +221,7 @@ public class WorkspaceRuntimes {
      * @see MachineManager#destroy(String, boolean)
      * @see WorkspaceStatus#STOPPING
      */
+    // todo stop env by env component
     public void stop(String workspaceId) throws NotFoundException, ServerException, ConflictException {
         ensurePreDestroyIsNotExecuted();
         rwLock.writeLock().lock();
@@ -328,6 +332,8 @@ public class WorkspaceRuntimes {
     /**
      * Stops workspace by destroying all its machines and removing it from in memory storage.
      */
+    // todo can we add machine to running environment? with compose
+    //
     private void destroyRuntime(String wsId, WorkspaceRuntimeImpl workspace) throws NotFoundException, ServerException {
         publishEvent(EventType.STOPPING, wsId, null);
         final List<MachineImpl> machines = new ArrayList<>(workspace.getMachines());

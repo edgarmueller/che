@@ -20,6 +20,7 @@ import org.eclipse.che.api.core.model.workspace.Environment;
 import org.eclipse.che.api.core.model.workspace.Workspace;
 import org.eclipse.che.api.core.model.workspace.WorkspaceConfig;
 import org.eclipse.che.api.machine.server.MachineInstanceProviders;
+import org.eclipse.che.api.workspace.server.env.EnvironmentValidator;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -40,12 +41,15 @@ public class DefaultWorkspaceValidator implements WorkspaceValidator {
     private static final Pattern WS_NAME         = Pattern.compile("[a-zA-Z0-9][-_.a-zA-Z0-9]{1,18}[a-zA-Z0-9]");
     private static final Pattern SERVER_PORT     = Pattern.compile("[1-9]+[0-9]*/(?:tcp|udp)");
     private static final Pattern SERVER_PROTOCOL = Pattern.compile("[a-z][a-z0-9-+.]*");
-    
-    private final MachineInstanceProviders machineInstanceProviders;
+
+    private final MachineInstanceProviders          machineInstanceProviders;
+    private final Map<String, EnvironmentValidator> envValidators;
     
     @Inject
-    public DefaultWorkspaceValidator(MachineInstanceProviders machineInstanceProviders) {
-    	this.machineInstanceProviders = machineInstanceProviders;
+    public DefaultWorkspaceValidator(MachineInstanceProviders machineInstanceProviders,
+                                     Map<String, EnvironmentValidator> envValidators) {
+        this.machineInstanceProviders = machineInstanceProviders;
+        this.envValidators = envValidators;
     }
 
     @Override
@@ -72,7 +76,7 @@ public class DefaultWorkspaceValidator implements WorkspaceValidator {
                       "Workspace default environment configuration required");
 
         for (Environment environment : config.getEnvironments()) {
-            validateEnv(environment, config.getName());
+            validateEnv(environment);
         }
 
         //commands
@@ -100,23 +104,29 @@ public class DefaultWorkspaceValidator implements WorkspaceValidator {
         }
     }
 
-    private void validateEnv(Environment environment, String workspaceName) throws BadRequestException {
-        final String envName = environment.getName();
-        checkArgument(!isNullOrEmpty(envName), "Environment name should be neither null nor empty");
+    private void validateEnv(Environment environment) throws BadRequestException {
+        // new environment format validation
+        if (environment.getType() != null) {
+            envValidators.get(environment.getType()).validate(environment);
+        } else {
+            // old env format validation
+            final String envName = environment.getName();
+            checkArgument(!isNullOrEmpty(envName), "Environment name should be neither null nor empty");
 
-        //machine configs
-        checkArgument(!environment.getMachineConfigs().isEmpty(), "Environment '%s' should contain at least 1 machine", envName);
+            //machine configs
+            checkArgument(!environment.getMachineConfigs().isEmpty(), "Environment '%s' should contain at least 1 machine", envName);
 
-        final long devCount = environment.getMachineConfigs()
-                                         .stream()
-                                         .filter(MachineConfig::isDev)
-                                         .count();
-        checkArgument(devCount == 1,
-                      "Environment should contain exactly 1 dev machine, but '%s' contains '%d'",
-                      envName,
-                      devCount);
-        for (MachineConfig machineCfg : environment.getMachineConfigs()) {
-            validateMachine(machineCfg, envName);
+            final long devCount = environment.getMachineConfigs()
+                                             .stream()
+                                             .filter(MachineConfig::isDev)
+                                             .count();
+            checkArgument(devCount == 1,
+                          "Environment should contain exactly 1 dev machine, but '%s' contains '%d'",
+                          envName,
+                          devCount);
+            for (MachineConfig machineCfg : environment.getMachineConfigs()) {
+                validateMachine(machineCfg, envName);
+            }
         }
     }
 
