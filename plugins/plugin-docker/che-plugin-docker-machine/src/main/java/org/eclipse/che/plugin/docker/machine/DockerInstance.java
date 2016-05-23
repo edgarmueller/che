@@ -197,7 +197,7 @@ public class DockerInstance extends AbstractInstance {
             if (locallySnapshot) {
                 return new DockerInstanceKey(repository, tag, createImage(owner, repository, tag));
             } else {
-                return new DockerInstanceKey(repository, tag, registry, saveInRepository(owner, repository, tag));
+                return new DockerInstanceKey(repository, tag, registry, saveInRegistry(owner, repository, tag));
             }
         } catch (IOException ioEx) {
             throw new MachineException(ioEx);
@@ -208,7 +208,7 @@ public class DockerInstance extends AbstractInstance {
     }
 
     @VisibleForTesting
-    String saveInRepository(String owner, String repository, String tag) throws MachineException,
+    String saveInRegistry(String owner, String repository, String tag) throws MachineException,
                                                                                 IOException,
                                                                                 InterruptedException {
         final String repositoryName = registry + '/' + repository;

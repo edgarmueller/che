@@ -93,6 +93,7 @@ public class DockerInstanceProvider implements InstanceProvider {
     private final Set<String>                      commonMachineEnvVariables;
     private final String[]                         allMachinesExtraHosts;
     private final String                           projectFolderPath;
+    private final boolean                          locallySnapshot;
 
     @Inject
     public DockerInstanceProvider(DockerConnector docker,
@@ -110,9 +111,8 @@ public class DockerInstanceProvider implements InstanceProvider {
                                   @Named("machine.docker.pull_image") boolean doForcePullOnBuild,
                                   @Named("machine.docker.privilege_mode") boolean privilegeMode,
                                   @Named("machine.docker.dev_machine.machine_env") Set<String> devMachineEnvVariables,
-                                  @Named("machine.docker.machine_env") Set<String> allMachinesEnvVariables)
-            throws IOException {
-
+                                  @Named("machine.docker.machine_env") Set<String> allMachinesEnvVariables,
+                                  @Named("machine.save.snapshot.locally") boolean locallySnapshot) throws IOException {
         this.docker = docker;
         this.dockerMachineFactory = dockerMachineFactory;
         this.dockerInstanceStopDetector = dockerInstanceStopDetector;
@@ -122,6 +122,7 @@ public class DockerInstanceProvider implements InstanceProvider {
         this.privilegeMode = privilegeMode;
         this.supportedRecipeTypes = Collections.singleton("dockerfile");
         this.projectFolderPath = projectFolderPath;
+        this.locallySnapshot = locallySnapshot;
 
         allMachinesSystemVolumes = removeEmptyAndNullValues(allMachinesSystemVolumes);
         devMachineSystemVolumes = removeEmptyAndNullValues(devMachineSystemVolumes);
@@ -239,9 +240,9 @@ public class DockerInstanceProvider implements InstanceProvider {
                                    Machine machine,
                                    LineConsumer creationLogsOutput) throws NotFoundException, MachineException {
         final DockerInstanceKey dockerInstanceKey = new DockerInstanceKey(instanceKey);
-
-        pullImage(dockerInstanceKey, creationLogsOutput);
-
+        if (!locallySnapshot) {
+            pullImage(dockerInstanceKey, creationLogsOutput);
+        }
         final String userName = EnvironmentContext.getCurrent().getSubject().getUserName();
         final String machineContainerName = containerNameGenerator.generateContainerName(machine.getWorkspaceId(),
                                                                                          machine.getId(),
@@ -268,6 +269,8 @@ public class DockerInstanceProvider implements InstanceProvider {
                               machineImageName,
                               creationLogsOutput);
     }
+
+
 
     private Dockerfile parseRecipe(Recipe recipe) throws InvalidRecipeException {
         final Dockerfile dockerfile = getDockerFile(recipe);
