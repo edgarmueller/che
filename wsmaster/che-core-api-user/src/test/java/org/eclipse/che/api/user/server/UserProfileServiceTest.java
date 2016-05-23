@@ -54,7 +54,7 @@ import java.util.Set;
 import static org.eclipse.che.api.user.server.Constants.LINK_REL_UPDATE_CURRENT_PROFILE;
 import static org.eclipse.che.api.user.server.Constants.LINK_REL_CURRENT_PROFILE;
 import static org.eclipse.che.api.user.server.Constants.LINK_REL_GET_PROFILE_BY_ID;
-import static org.eclipse.che.api.user.server.Constants.LIN_REL_PREFERENCES;
+import static org.eclipse.che.api.user.server.Constants.LINK_REL_PREFERENCES;
 import static org.eclipse.che.api.user.server.Constants.LINK_REL_UPDATE_PROFILE_BY_ID;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
@@ -365,7 +365,7 @@ public class UserProfileServiceTest {
         final Set<String> expectedRels = new HashSet<>(asList(LINK_REL_CURRENT_PROFILE,
                                                               LINK_REL_UPDATE_CURRENT_PROFILE,
                                                               LINK_REL_GET_PROFILE_BY_ID,
-                                                              LIN_REL_PREFERENCES));
+                                                              LINK_REL_PREFERENCES));
 
         assertEquals(asRels(service.toDescriptor(profile, securityContext).getLinks()), expectedRels);
     }

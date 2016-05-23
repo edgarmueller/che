@@ -27,7 +27,7 @@ import static java.util.Objects.requireNonNull;
 @Singleton
 public class PreferencesManager {
 
-    private static final Striped<Lock> UPDATE_REENTRANT_LOCKS = Striped.lazyWeakLock(16);
+    private static final Striped<Lock> UPDATE_REENTRANT_LOCKS = Striped.lazyWeakLock(32);
 
     @Inject
     private PreferenceDao preferenceDao;

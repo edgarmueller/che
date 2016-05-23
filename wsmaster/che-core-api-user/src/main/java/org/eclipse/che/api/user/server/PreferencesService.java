@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiResponses;
 
 import org.eclipse.che.api.core.BadRequestException;
 import org.eclipse.che.api.core.ServerException;
+import org.eclipse.che.api.core.rest.Service;
 import org.eclipse.che.api.core.rest.annotations.GenerateLink;
 import org.eclipse.che.commons.env.EnvironmentContext;
 
@@ -24,8 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static org.eclipse.che.api.user.server.Constants.LINK_REL_REMOVE_PREFERENCES;
-import static org.eclipse.che.api.user.server.Constants.LIN_REL_PREFERENCES;
+import static org.eclipse.che.api.user.server.Constants.LINK_REL_PREFERENCES;
 
 /**
  * Preferences REST API.
@@ -33,7 +33,7 @@ import static org.eclipse.che.api.user.server.Constants.LIN_REL_PREFERENCES;
  * @author Yevhenii Voevodin
  */
 @Path("/preferences")
-public class PreferencesService {
+public class PreferencesService extends Service {
 
     @Inject
     private PreferencesManager preferencesManager;
@@ -66,7 +66,7 @@ public class PreferencesService {
 
     @PUT
     @RolesAllowed("user")
-    @GenerateLink(rel = LIN_REL_PREFERENCES)
+    @GenerateLink(rel = LINK_REL_PREFERENCES)
     @Consumes(APPLICATION_JSON)
     @Produces(APPLICATION_JSON)
     public Map<String, String> update(Map<String, String> preferences) throws ServerException, BadRequestException {
@@ -79,7 +79,7 @@ public class PreferencesService {
     @DELETE
     @RolesAllowed("user")
     @Consumes(APPLICATION_JSON)
-    @GenerateLink(rel = LINK_REL_REMOVE_PREFERENCES)
+    @GenerateLink(rel = LINK_REL_PREFERENCES)
     @ApiOperation(value = "Remove preferences of current user.",
                   notes = "if names are not specified, then all the user's preferences will be removed, " +
                           "otherwise only the preferences which names are listed")
