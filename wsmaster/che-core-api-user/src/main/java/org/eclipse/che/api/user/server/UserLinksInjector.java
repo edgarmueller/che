@@ -17,6 +17,7 @@ import org.eclipse.che.api.user.shared.dto.UserDto;
 import org.eclipse.che.commons.env.EnvironmentContext;
 import org.eclipse.che.commons.user.User;
 
+import javax.inject.Singleton;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.core.UriBuilder;
 import java.util.LinkedList;
@@ -28,7 +29,6 @@ import static org.eclipse.che.api.user.server.Constants.LINK_REL_GET_CURRENT_USE
 import static org.eclipse.che.api.user.server.Constants.LINK_REL_CURRENT_PROFILE;
 import static org.eclipse.che.api.user.server.Constants.LINK_REL_GET_USER_BY_EMAIL;
 import static org.eclipse.che.api.user.server.Constants.LINK_REL_GET_USER_BY_ID;
-import static org.eclipse.che.api.user.server.Constants.LINK_REL_GET_PROFILE_BY_ID;
 import static org.eclipse.che.api.user.server.Constants.LINK_REL_REMOVE_USER_BY_ID;
 import static org.eclipse.che.api.user.server.Constants.LINK_REL_UPDATE_PASSWORD;
 
@@ -37,9 +37,10 @@ import static org.eclipse.che.api.user.server.Constants.LINK_REL_UPDATE_PASSWORD
  *
  * @author Anatoliy Bazko
  */
-public final class LinksInjector {
+@Singleton
+public class UserLinksInjector {
 
-    public static UserDto injectLinks(UserDto userDescriptor, ServiceContext serviceContext) {
+    public UserDto injectLinks(UserDto userDescriptor, ServiceContext serviceContext) {
         final User currentUser = EnvironmentContext.getCurrent().getUser();
         final UriBuilder uriBuilder = serviceContext.getBaseUriBuilder();
 
@@ -112,6 +113,4 @@ public final class LinksInjector {
 
         return userDescriptor.withLinks(links);
     }
-
-    private LinksInjector() {}
 }

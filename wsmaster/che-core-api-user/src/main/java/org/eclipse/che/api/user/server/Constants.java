@@ -25,6 +25,8 @@ public final class Constants {
     public static final String LINK_REL_PROFILE_ATTRIBUTES         = "profile.attributes";
 
     /** User links rels. */
+    public static final String LINK_REL_USER = "user";
+
     public static final String LINK_REL_CREATE_USER       = "create user";
     public static final String LINK_REL_GET_CURRENT_USER  = "get current";
     public static final String LINK_REL_UPDATE_PASSWORD   = "update password";

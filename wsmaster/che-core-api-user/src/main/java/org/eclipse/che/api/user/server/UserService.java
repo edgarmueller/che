@@ -55,52 +55,51 @@ import static com.google.common.base.Strings.isNullOrEmpty;
 import static javax.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.Status.CREATED;
-import static javax.ws.rs.core.Response.status;
-import static org.eclipse.che.api.user.server.Constants.LINK_REL_CREATE_USER;
 import static org.eclipse.che.api.user.server.Constants.LINK_REL_GET_CURRENT_USER;
 import static org.eclipse.che.api.user.server.Constants.LINK_REL_GET_USER_BY_EMAIL;
 import static org.eclipse.che.api.user.server.Constants.LINK_REL_GET_USER_BY_ID;
 import static org.eclipse.che.api.user.server.Constants.LINK_REL_REMOVE_USER_BY_ID;
 import static org.eclipse.che.api.user.server.Constants.LINK_REL_UPDATE_PASSWORD;
-import static org.eclipse.che.api.user.server.DtoConverter.toDescriptor;
-import static org.eclipse.che.api.user.server.LinksInjector.injectLinks;
+import static org.eclipse.che.api.user.server.Constants.LINK_REL_USER;
+import static org.eclipse.che.api.user.server.DtoConverter.asDto;
 
 /**
- * Provides REST API for user management.
+ * User REST API.
  *
  * @author Yevhenii Voevodin
  * @author Anton Korneta
  */
-@Api(value = "/user", description = "User manager")
 @Path("/user")
+@Api(value = "/user", description = "User REST API")
 public class UserService extends Service {
     @VisibleForTesting
     static final String USER_SELF_CREATION_ALLOWED = "user.self.creation.allowed";
 
-    private final UserManager    userManager;
-    private final TokenValidator tokenValidator;
-    private final boolean        userSelfCreationAllowed;
+    private final UserManager       userManager;
+    private final TokenValidator    tokenValidator;
+    private final UserLinksInjector linksInjector;
+    private final boolean           userSelfCreationAllowed;
+
+    @Context
+    private SecurityContext context;
 
     @Inject
     public UserService(UserManager userManager,
                        TokenValidator tokenValidator,
+                       UserLinksInjector linksInjector,
                        @Named(USER_SELF_CREATION_ALLOWED) boolean userSelfCreationAllowed) {
         this.userManager = userManager;
+        this.linksInjector = linksInjector;
         this.tokenValidator = tokenValidator;
         this.userSelfCreationAllowed = userSelfCreationAllowed;
     }
 
     @POST
-    @Path("/create")
+    @Path("/user")
     @Consumes(APPLICATION_JSON)
     @Produces(APPLICATION_JSON)
-    @GenerateLink(rel = LINK_REL_CREATE_USER)
-    @ApiOperation(value = "Create a new user",
-                  notes = "Create a new user in the system. There are two ways to create a user: " +
-                          "through a regular registration workflow and by system/admin. In the former case, " +
-                          "auth token is sent to user's mailbox, while system/admin can create a user directly " +
-                          "with predefined name and password",
-                  response = UserDto.class)
+    @GenerateLink(rel = LINK_REL_USER)
+    @ApiOperation(value = "Creates a new user", response = UserDto.class)
     @ApiResponses({@ApiResponse(code = 201, message = "Created"),
                    @ApiResponse(code = 400, message = "Missed required parameters, parameters are not valid"),
                    @ApiResponse(code = 401, message = "Missed token parameter"),
@@ -108,7 +107,7 @@ public class UserService extends Service {
                    @ApiResponse(code = 409, message = "Invalid token"),
                    @ApiResponse(code = 500, message = "Internal Server Error")})
     public Response create(@ApiParam(value = "New user")
-                           UserDto userDescriptor,
+                           UserDto userDto,
                            @ApiParam(value = "Authentication token")
                            @QueryParam("token")
                            String token,
@@ -123,13 +122,11 @@ public class UserService extends Service {
                                                            ConflictException,
                                                            ServerException,
                                                            NotFoundException {
-        if (!context.isUserInRole("system/admin") && !userSelfCreationAllowed) {
-            throw new ForbiddenException("Currently only admins can create accounts. Please contact our Admin Team for further info.");
-        }
-
-        final User user = context.isUserInRole("system/admin") ? fromEntity(userDescriptor) : fromToken(token);
+        final User user = context.isUserInRole("system/admin") ? fromEntity(userDto) : fromToken(token);
         userManager.create(user, isTemporary);
-        return status(CREATED).entity(injectLinks(toDescriptor(user), getServiceContext())).build();
+        return Response.status(CREATED)
+                       .entity(linksInjector.injectLinks(asDto(user), getServiceContext()))
+                       .build();
     }
 
     @GET
@@ -145,7 +142,7 @@ public class UserService extends Service {
                    @ApiResponse(code = 500, message = "Internal Server Error")})
     public UserDto getCurrent() throws NotFoundException, ServerException {
         final User user = userManager.getById(subjectId());
-        return injectLinks(toDescriptor(user), getServiceContext());
+        return linksInjector.injectLinks(asDto(user), getServiceContext());
     }
 
     @POST
@@ -186,7 +183,7 @@ public class UserService extends Service {
     public UserDto getById(@ApiParam(value = "User ID") @PathParam("id") String id) throws NotFoundException,
                                                                                            ServerException {
         final User user = userManager.getById(id);
-        return injectLinks(toDescriptor(user), getServiceContext());
+        return linksInjector.injectLinks(asDto(user), getServiceContext());
     }
 
     @GET
@@ -210,7 +207,7 @@ public class UserService extends Service {
             throw new BadRequestException("Missed parameter alias");
         }
         final User user = userManager.getByAlias(alias);
-        return injectLinks(toDescriptor(user), getServiceContext());
+        return linksInjector.injectLinks(asDto(user), getServiceContext());
     }
 
     @DELETE
@@ -243,7 +240,7 @@ public class UserService extends Service {
                              @PathParam("name")
                              String name) throws NotFoundException, ServerException {
         final User user = userManager.getByName(name);
-        return injectLinks(toDescriptor(user), getServiceContext());
+        return linksInjector.injectLinks(asDto(user), getServiceContext());
     }
 
     @GET

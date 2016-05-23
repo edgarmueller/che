@@ -24,7 +24,7 @@ public final class DtoConverter {
     /**
      * Converts {@link User} to {@link UserDto}.
      */
-    public static UserDto toDescriptor(User user) {
+    public static UserDto asDto(User user) {
         return DtoFactory.getInstance().createDto(UserDto.class)
                          .withId(user.getId())
                          .withEmail(user.getEmail())
