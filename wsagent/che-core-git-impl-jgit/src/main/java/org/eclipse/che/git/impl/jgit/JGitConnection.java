@@ -20,6 +20,7 @@ import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.eclipse.che.api.core.ErrorCodes;
+import org.eclipse.che.api.core.ServerException;
 import org.eclipse.che.api.core.UnauthorizedException;
 import org.eclipse.che.api.core.util.LineConsumerFactory;
 import org.eclipse.che.api.git.Config;
@@ -72,7 +73,7 @@ import org.eclipse.che.api.git.shared.Tag;
 import org.eclipse.che.api.git.shared.TagCreateRequest;
 import org.eclipse.che.api.git.shared.TagDeleteRequest;
 import org.eclipse.che.api.git.shared.TagListRequest;
-import org.eclipse.che.git.impl.jgit.ssh.SshKeyProvider;
+import org.eclipse.che.plugin.ssh.key.script.SshKeyProvider;
 import org.eclipse.jgit.api.AddCommand;
 import org.eclipse.jgit.api.CheckoutCommand;
 import org.eclipse.jgit.api.CloneCommand;
@@ -1529,12 +1530,11 @@ class JGitConnection implements GitConnection {
      *         if other error occurs
      */
     private File writePrivateKeyFile(String url, File keyDirectory) throws GitException {
-        byte[] sshKey = sshKeyProvider.getPrivateKey(url);
-
         final File keyFile = new File(keyDirectory, "identity");
         try (FileOutputStream fos = new FileOutputStream(keyFile)) {
+            byte[] sshKey = sshKeyProvider.getPrivateKey(url);
             fos.write(sshKey);
-        } catch (IOException exception) {
+        } catch (IOException | ServerException exception) {
             String errorMessage = "Can't store ssh key. ".concat(exception.getMessage());
             LOG.error(errorMessage, exception);
             throw new GitException(errorMessage, exception);
@@ -1545,7 +1545,6 @@ class JGitConnection implements GitConnection {
         } catch (IOException exception) {
             throw new GitException(exception.getMessage(), exception);
         }
-
         return keyFile;
     }
 
