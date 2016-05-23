@@ -193,6 +193,7 @@ class JGitConnection implements GitConnection {
     private static final String ERROR_AUTHENTICATION_REQUIRED      = "Authentication is required but no CredentialsProvider has " +
                                                                      "been registered";
     private static final String ERROR_AUTHENTICATION_FAILED        = "fatal: Authentication failed for '%s/'\n";
+    private static final String ERROR_NO_HEAD_EXISTS               = "No HEAD exists and no explicit starting revision was specified";
 
     private static final String MESSAGE_COMMIT_NOT_POSSIBLE = "Commit is not possible because repository state is '%s'";
     private static final String MESSAGE_AMEND_NOT_POSSIBLE  = "Amend is not possible because repository state is '%s'";
@@ -663,7 +664,11 @@ class JGitConnection implements GitConnection {
             }
             return new LogPage(commits);
         } catch (GitAPIException | IOException exception) {
-            throw new GitException(exception.getMessage(), exception);
+            String errorMessage = exception.getMessage();
+            if (ERROR_NO_HEAD_EXISTS.equals(errorMessage)) {
+                throw new GitException(errorMessage, ErrorCodes.INIT_COMMIT_WAS_NOT_PERFORMED);
+            }
+            throw new GitException(errorMessage, exception);
         }
     }
 

@@ -35,9 +35,11 @@ import org.eclipse.jgit.treewalk.filter.PathFilterGroup;
 import org.eclipse.jgit.treewalk.filter.TreeFilter;
 
 import java.io.BufferedOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -146,6 +148,10 @@ class JGitDiffPage extends DiffPage {
     private List<DiffEntry> commitToWorkingTree(String commitId, DiffFormatter formatter) throws IOException {
         ObjectId commitA = repository.resolve(commitId);
         if (commitA == null) {
+            File heads = new File(repository.getWorkTree().getPath() + "/.git/refs/heads");
+            if (heads.exists() && heads.list().length == 0) {
+                return Collections.emptyList();
+            }
             throw new IllegalArgumentException("Invalid commit id " + commitId);
         }
         RevTree treeA;
