@@ -20,7 +20,7 @@ import org.eclipse.che.api.core.model.workspace.Environment;
 import org.eclipse.che.api.core.model.workspace.Workspace;
 import org.eclipse.che.api.core.model.workspace.WorkspaceConfig;
 import org.eclipse.che.api.machine.server.MachineInstanceProviders;
-import org.eclipse.che.api.workspace.server.env.EnvironmentValidator;
+import org.eclipse.che.api.workspace.server.env.spi.EnvironmentValidator;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

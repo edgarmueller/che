@@ -8,16 +8,23 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package org.eclipse.che.api.workspace.server.env;
-
-import com.google.inject.ImplementedBy;
+package org.eclipse.che.api.workspace.server.env.spi;
 
 import org.eclipse.che.api.core.model.workspace.Environment;
+
+import java.util.Set;
 
 /**
  * author Alexander Garagatyi
  */
-@ImplementedBy(CheEnvironmentValidator.class)
-public interface EnvironmentValidator {
-    void validate(Environment env);
+public interface EnvironmentImplManager {
+    Set<String> getSupportedTypes();
+
+    void start(String workspaceId, Environment env, boolean recover);
+
+    void stop(String workspaceId);
+
+    void get();
+
+    void startMachine();
 }

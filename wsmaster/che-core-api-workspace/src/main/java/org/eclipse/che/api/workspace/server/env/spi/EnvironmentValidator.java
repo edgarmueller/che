@@ -8,16 +8,17 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package org.eclipse.che.api.workspace.server.env;
+package org.eclipse.che.api.workspace.server.env.spi;
+
+import com.google.inject.ImplementedBy;
 
 import org.eclipse.che.api.core.model.workspace.Environment;
+import org.eclipse.che.api.workspace.server.env.impl.che.CheEnvironmentValidator;
 
 /**
  * author Alexander Garagatyi
  */
-public class CheEnvironmentValidator implements EnvironmentValidator {
-    @Override
-    public void validate(Environment env) {
-
-    }
+@ImplementedBy(CheEnvironmentValidator.class)
+public interface EnvironmentValidator {
+    void validate(Environment env);
 }
