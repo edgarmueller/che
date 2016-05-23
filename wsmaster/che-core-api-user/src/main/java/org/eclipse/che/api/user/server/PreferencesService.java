@@ -1,5 +1,6 @@
 package org.eclipse.che.api.user.server;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
@@ -11,7 +12,6 @@ import org.eclipse.che.api.core.rest.Service;
 import org.eclipse.che.api.core.rest.annotations.GenerateLink;
 import org.eclipse.che.commons.env.EnvironmentContext;
 
-import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -33,6 +33,7 @@ import static org.eclipse.che.api.user.server.Constants.LINK_REL_PREFERENCES;
  * @author Yevhenii Voevodin
  */
 @Path("/preferences")
+@Api(value = "/preferences", description = "Preferences REST API")
 public class PreferencesService extends Service {
 
     @Inject
@@ -40,14 +41,16 @@ public class PreferencesService extends Service {
 
     @GET
     @Produces(APPLICATION_JSON)
-    @RolesAllowed("user")
-    @ApiOperation(value = "Get user preferences",
-                  notes = "Get user preferences, like SSH keys, recently opened project and files. It is possible " +
-                          "to use a filter, e.g. CodenvyAppState or ssh.key.public.github.com to get the last opened project " +
-                          "or a public part of GitHub SSH key (if any)")
+    @GenerateLink(rel = LINK_REL_PREFERENCES)
+    @ApiOperation(value = "Gets preferences of logged in user",
+                  notes = "If not all the preferences needed then 'filter' may be used, " +
+                          "basically it is regex for filtering preferences by names")
     @ApiResponses({@ApiResponse(code = 200, message = "Preferences successfully fetched"),
                    @ApiResponse(code = 500, message = "Internal Server Error")})
-    public Map<String, String> find(@ApiParam("Filer") @QueryParam("filter") String filter) throws ServerException {
+    public Map<String, String> find(@ApiParam("Regex for filtering preferences by names, e.g. '.*github.*' " +
+                                              "will return all the preferences which name contains github")
+                                    @QueryParam("filter")
+                                    String filter) throws ServerException {
         if (filter == null) {
             return preferencesManager.find(subjectId());
         }
@@ -56,7 +59,11 @@ public class PreferencesService extends Service {
 
     @POST
     @Consumes(APPLICATION_JSON)
-    @RolesAllowed("user")
+    @GenerateLink(rel = LINK_REL_PREFERENCES)
+    @ApiOperation(value = "Saves preferences of logged in user",
+                  notes = "All the existing user's preferences will be override by this method")
+    @ApiResponses({@ApiResponse(code = 400, message = "Request doesn't contain new preferences"),
+                   @ApiResponse(code = 500, message = "Couldn't save preferences due to internal server error")})
     public void save(Map<String, String> preferences) throws BadRequestException, ServerException {
         if (preferences == null) {
             throw new BadRequestException("Required non-null new preferences");
@@ -65,10 +72,15 @@ public class PreferencesService extends Service {
     }
 
     @PUT
-    @RolesAllowed("user")
-    @GenerateLink(rel = LINK_REL_PREFERENCES)
     @Consumes(APPLICATION_JSON)
     @Produces(APPLICATION_JSON)
+    @GenerateLink(rel = LINK_REL_PREFERENCES)
+    @ApiOperation(value = "Updates preferences of logged in user",
+                  notes = "The merge strategy is used for update, which means that " +
+                          "existing preferences with keys equal to update preference keys will" +
+                          "be replaces with new values, and new preferences will be added")
+    @ApiResponses({@ApiResponse(code = 400, message = "Request doesn't contain preferences update"),
+                   @ApiResponse(code = 500, message = "Couldn't update preferences due to internal server error")})
     public Map<String, String> update(Map<String, String> preferences) throws ServerException, BadRequestException {
         if (preferences == null) {
             throw new BadRequestException("Required non-null preferences update");
@@ -77,16 +89,13 @@ public class PreferencesService extends Service {
     }
 
     @DELETE
-    @RolesAllowed("user")
     @Consumes(APPLICATION_JSON)
     @GenerateLink(rel = LINK_REL_PREFERENCES)
-    @ApiOperation(value = "Remove preferences of current user.",
-                  notes = "if names are not specified, then all the user's preferences will be removed, " +
+    @ApiOperation(value = "Remove preferences of logged in user.",
+                  notes = "If names are not specified, then all the user's preferences will be removed, " +
                           "otherwise only the preferences which names are listed")
-    @ApiResponses({@ApiResponse(code = 204, message = "OK"),
-                   @ApiResponse(code = 404, message = "Not Found"),
-                   @ApiResponse(code = 409, message = "Preferences names required"),
-                   @ApiResponse(code = 500, message = "Internal Server Error")})
+    @ApiResponses({@ApiResponse(code = 204, message = "Preferences successfully removed"),
+                   @ApiResponse(code = 500, message = "Couldn't remove preferences due to internal server error")})
     public void removePreferences(@ApiParam("Preferences to remove") List<String> names) throws ServerException {
         if (names == null || names.isEmpty()) {
             preferencesManager.remove(subjectId());
