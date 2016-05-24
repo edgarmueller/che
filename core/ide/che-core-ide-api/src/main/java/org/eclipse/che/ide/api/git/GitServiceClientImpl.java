@@ -13,6 +13,14 @@ package org.eclipse.che.ide.api.git;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import org.eclipse.che.api.core.ApiException;
+import org.eclipse.che.api.core.BadRequestException;
+import org.eclipse.che.api.core.ConflictException;
+import org.eclipse.che.api.core.ForbiddenException;
+import org.eclipse.che.api.core.NotFoundException;
+import org.eclipse.che.api.core.ServerException;
+import org.eclipse.che.api.core.UnauthorizedException;
+import org.eclipse.che.api.core.rest.HttpJsonRequestFactory;
 import org.eclipse.che.api.git.shared.AddRequest;
 import org.eclipse.che.api.git.shared.Branch;
 import org.eclipse.che.api.git.shared.BranchCreateRequest;
@@ -69,6 +77,7 @@ import org.eclipse.che.ide.websocket.WebSocketException;
 import org.eclipse.che.ide.websocket.rest.RequestCallback;
 
 import javax.validation.constraints.NotNull;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -118,6 +127,7 @@ public class GitServiceClientImpl implements GitServiceClient {
     private final WsAgentStateController wsAgentStateController;
     private final DtoFactory             dtoFactory;
     private final DtoUnmarshallerFactory dtoUnmarshallerFactory;
+    private final HttpJsonRequestFactory requestFactory;
     private final AsyncRequestFactory    asyncRequestFactory;
     private final AppContext             appContext;
 
@@ -127,13 +137,15 @@ public class GitServiceClientImpl implements GitServiceClient {
                                    DtoFactory dtoFactory,
                                    AsyncRequestFactory asyncRequestFactory,
                                    DtoUnmarshallerFactory dtoUnmarshallerFactory,
-                                   AppContext appContext) {
+                                   AppContext appContext,
+                                   HttpJsonRequestFactory requestFactory) {
         this.appContext = appContext;
         this.loader = loaderFactory.newLoader();
         this.wsAgentStateController = wsAgentStateController;
         this.dtoFactory = dtoFactory;
         this.asyncRequestFactory = asyncRequestFactory;
         this.dtoUnmarshallerFactory = dtoUnmarshallerFactory;
+        this.requestFactory = requestFactory;
     }
 
     /** {@inheritDoc} */
@@ -265,15 +277,16 @@ public class GitServiceClientImpl implements GitServiceClient {
     @Override
     public void config(DevMachine devMachine,
                        ProjectConfigDto project,
-                       @Nullable List<String> entries,
-                       boolean all,
+                       @Nullable List<String> requestedConfig,
                        AsyncRequestCallback<Map<String, String>> callback) {
-        ConfigRequest configRequest = dtoFactory.createDto(ConfigRequest.class)
-                                                .withGetAll(all)
-                                                .withConfigEntry(entries);
-        String url = appContext.getDevMachine().getWsAgentBaseUrl() + CONFIG + "?projectPath=" + project.getPath();
-
-        asyncRequestFactory.createPostRequest(url, configRequest).loader(loader).send(callback);
+        String params = "?projectPath=" + project.getPath();
+        if (requestedConfig != null) {
+            for (String entry : requestedConfig) {
+                params += "&requestedConfig=" + entry;
+            }
+        }
+        String url = appContext.getDevMachine().getWsAgentBaseUrl() + CONFIG + params;
+        asyncRequestFactory.createGetRequest(url).loader(loader).send(callback);
     }
 
     /** {@inheritDoc} */
@@ -393,7 +406,12 @@ public class GitServiceClientImpl implements GitServiceClient {
                              AsyncRequestCallback<Branch> callback) {
         BranchCreateRequest branchCreateRequest = dtoFactory.createDto(BranchCreateRequest.class).withName(name).withStartPoint(startPoint);
         String url = appContext.getDevMachine().getWsAgentBaseUrl() + BRANCH_CREATE + "?projectPath=" + project.getPath();
-        asyncRequestFactory.createPostRequest(url, branchCreateRequest).loader(loader).header(ACCEPT, APPLICATION_JSON).send(callback);
+        //asyncRequestFactory.createPostRequest(url, branchCreateRequest).loader(loader).header(ACCEPT, APPLICATION_JSON).send(callback);
+        try {
+            requestFactory.fromUrl(url).useGetMethod().setBody(branchCreateRequest).request();
+        } catch (IOException | ApiException e)  {
+            e.printStackTrace();
+        }
     }
 
     /** {@inheritDoc} */

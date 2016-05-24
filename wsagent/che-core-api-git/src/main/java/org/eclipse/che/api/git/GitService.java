@@ -59,8 +59,10 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -108,7 +110,7 @@ public class GitService {
     }
 
     @Path("branch-create")
-    @POST
+    @GET
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Branch branchCreate(BranchCreateRequest request) throws ApiException {
@@ -372,20 +374,20 @@ public class GitService {
 
 
     @Path("config")
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
+    @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Map<String, String> getConfig(ConfigRequest request) throws ApiException {
+    public Map<String, String> getConfig(@QueryParam("requestedConfig") List<String> requestedConfig)
+            throws ApiException {
         Map<String, String> result = new HashMap<>();
         try (GitConnection gitConnection = getGitConnection()) {
             Config config = gitConnection.getConfig();
-            if (request.isGetAll()) {
+            if (requestedConfig == null || requestedConfig.isEmpty()) {
                 for (String row : config.getList()) {
                     String[] keyValues = row.split("=", 2);
                     result.put(keyValues[0], keyValues[1]);
                 }
             } else {
-                for (String entry : request.getConfigEntry()) {
+                for (String entry : requestedConfig) {
                     try {
                         String value = config.get(entry);
                         result.put(entry, value);
@@ -396,6 +398,42 @@ public class GitService {
             }
         }
         return result;
+    }
+
+
+    @Path("config")
+    @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
+    public void setConfig(ConfigRequest request) throws ApiException {
+        try (GitConnection gitConnection = getGitConnection()) {
+            Config config = gitConnection.getConfig();
+            for (Map.Entry<String, String> configData : request.getConfigEntries().entrySet()) {
+                try {
+                    config.set(configData.getKey(), configData.getValue());
+                } catch (GitException exception) {
+                    final String msg = "Cannot write to config file";
+                    LOG.error(msg, exception);
+                    throw new GitException(msg);
+                }
+            }
+        }
+    }
+
+    @Path("config")
+    @DELETE
+    public void unsetConfig(@QueryParam("requestedConfig") List<String> requestedConfig) throws ApiException {
+        try (GitConnection gitConnection = getGitConnection()) {
+            Config config = gitConnection.getConfig();
+            if (requestedConfig != null && !requestedConfig.isEmpty()) {
+                for (String entry : requestedConfig) {
+                    try {
+                        config.unset(entry);
+                    } catch (GitException exception) {
+                        //value for this config property non found. Do nothing
+                    }
+                }
+            }
+        }
     }
 
     @Path("tag-list")
