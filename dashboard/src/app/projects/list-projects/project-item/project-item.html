@@ -13,11 +13,13 @@
 <che-list-item flex-gt-xs="100" flex="33"
                ng-mouseover="hover=true" ng-mouseout="hover=false">
   <div flex="100"
-       layout-gt-xs="row"
-       layout-align="start center"
+       layout="column" layout-gt-xs="row"
+       layout-align="start stretch"
        class="project-list-row">
 
-    <div class="project-list-static-icon">
+    <div layout="row"
+         layout-align="center center"
+         class="project-list-static-icon">
       <che-list-item-checked class="project-type-checked"
                               ng-model="projectItemCtrl.isSelect"
                               ng-show="projectItemCtrl.isSelectable"
@@ -28,7 +30,7 @@
 
     <div flex
          layout="column"
-         layout-align-xs="center center" layout-align-gt-xs="start center"
+         layout-align-xs="center center" layout-align-gt-xs="center start"
          ng-click="projectItemCtrl.redirectToProjectDetails()">
       <div class="project-name che-hover">
         {{projectItemCtrl.project.name}}
