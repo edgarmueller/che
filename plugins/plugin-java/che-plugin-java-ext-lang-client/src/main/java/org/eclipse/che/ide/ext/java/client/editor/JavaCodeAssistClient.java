@@ -116,8 +116,7 @@ public class JavaCodeAssistClient {
         return newPromise(new AsyncPromiseHelper.RequestCall<List<Change>>() {
             @Override
             public void makeCall(AsyncCallback<List<Change>> callback) {
-                String url = appContext.getDevMachine().getWsAgentBaseUrl() + "/code-formatting/format?offset=" + offset +
-                             "&length=" + length;
+                String url = appContext.getDevMachine().getWsAgentBaseUrl() + "/java/code-formatting/format?offset=" + offset + "&length=" + length;
                 asyncRequestFactory.createPostRequest(url, null)
                                    .header(CONTENT_TYPE, MimeType.TEXT_PLAIN)
                                    .data(content)
