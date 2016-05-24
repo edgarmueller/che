@@ -42,6 +42,8 @@ import java.io.PrintWriter;
 import java.util.Collections;
 import java.util.List;
 
+import static java.lang.System.lineSeparator;
+
 /**
  * Contains information about difference between two commits, commit and working tree,
  * working tree and index, commit and index.
@@ -299,7 +301,7 @@ class JGitDiffPage extends DiffPage {
         PrintWriter writer = new PrintWriter(out);
         for (DiffEntry de : diff) {
             writer.print((de.getChangeType() == ChangeType.DELETE ? de.getOldPath() : de.getNewPath()) +
-                         (diff.size() != diff.indexOf(de) + 1 ? "\n" : ""));
+                         (diff.size() != diff.indexOf(de) + 1 ? lineSeparator() : ""));
         }
         writer.flush();
     }
@@ -309,15 +311,15 @@ class JGitDiffPage extends DiffPage {
         int diffSize = diff.size();
         for (DiffEntry de : diff) {
             if (de.getChangeType() == ChangeType.ADD) {
-                writer.print("A\t" + de.getNewPath() + (diffSize != diff.indexOf(de) + 1 ? "\n" : ""));
+                writer.print("A\t" + de.getNewPath() + (diffSize != diff.indexOf(de) + 1 ? lineSeparator() : ""));
             } else if (de.getChangeType() == ChangeType.DELETE) {
-                writer.print("D\t" + de.getOldPath() + (diffSize != diff.indexOf(de) + 1 ? "\n" : ""));
+                writer.print("D\t" + de.getOldPath() + (diffSize != diff.indexOf(de) + 1 ? lineSeparator() : ""));
             } else if (de.getChangeType() == ChangeType.MODIFY) {
-                writer.print("M\t" + de.getNewPath() + (diffSize != diff.indexOf(de) + 1 ? "\n" : ""));
+                writer.print("M\t" + de.getNewPath() + (diffSize != diff.indexOf(de) + 1 ? lineSeparator() : ""));
             } else if (de.getChangeType() == ChangeType.COPY) {
-                writer.print("C\t" + de.getOldPath() + '\t' + de.getNewPath() + (diffSize != diff.indexOf(de) + 1 ? "\n" : ""));
+                writer.print("C\t" + de.getOldPath() + '\t' + de.getNewPath() + (diffSize != diff.indexOf(de) + 1 ? lineSeparator() : ""));
             } else if (de.getChangeType() == ChangeType.RENAME) {
-                writer.print("R\t" + de.getOldPath() + '\t' + de.getNewPath() + (diffSize != diff.indexOf(de) + 1 ? "\n" : ""));
+                writer.print("R\t" + de.getOldPath() + '\t' + de.getNewPath() + (diffSize != diff.indexOf(de) + 1 ? lineSeparator() : ""));
             }
         }
         writer.flush();

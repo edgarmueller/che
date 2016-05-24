@@ -158,8 +158,12 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static com.google.common.base.Strings.isNullOrEmpty;
+import static java.lang.System.lineSeparator;
 import static java.nio.file.attribute.PosixFilePermission.OWNER_READ;
 import static java.nio.file.attribute.PosixFilePermission.OWNER_WRITE;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.eclipse.che.dto.server.DtoFactory.newDto;
 
 /**
@@ -193,7 +197,7 @@ class JGitConnection implements GitConnection {
                                                                      "remote name from which new revisions should be fetched in request.";
     private static final String ERROR_AUTHENTICATION_REQUIRED      = "Authentication is required but no CredentialsProvider has " +
                                                                      "been registered";
-    private static final String ERROR_AUTHENTICATION_FAILED        = "fatal: Authentication failed for '%s/'\n";
+    private static final String ERROR_AUTHENTICATION_FAILED        = "fatal: Authentication failed for '%s/'" + lineSeparator();
     private static final String ERROR_NO_HEAD_EXISTS               = "No HEAD exists and no explicit starting revision was specified";
 
     private static final String MESSAGE_COMMIT_NOT_POSSIBLE = "Commit is not possible because repository state is '%s'";
@@ -483,21 +487,6 @@ class JGitConnection implements GitConnection {
                 return rev;
             }
 
-            Status status = status(StatusFormat.LONG);
-            if (status.getAdded().isEmpty() && status.getChanged().isEmpty() && status.getRemoved().isEmpty()) {
-                if (request.isAll()) {
-                    if (status.getMissing().isEmpty() && status.getModified().isEmpty()) {
-                        return newDto(Revision.class).withMessage(message);
-                    }
-                } else {
-                    if (status.getMissing().isEmpty() && status.getModified().isEmpty()) {
-                        return newDto(Revision.class).withMessage(message);
-                    } else {
-                        return newDto(Revision.class).withMessage(message);
-                    }
-                }
-            }
-
             CommitCommand commitCommand = getGit().commit()
                                                   .setCommitter(committerName, committerEmail).setAuthor(committerName, committerEmail)
                                                   .setMessage(message)
@@ -509,7 +498,7 @@ class JGitConnection implements GitConnection {
 
             return newDto(Revision.class).withBranch(getCurrentBranch())
                                          .withId(result.getId().getName()).withMessage(result.getFullMessage())
-                                         .withCommitTime((long)result.getCommitTime() * 1000).withCommitter(gitUser);
+                                         .withCommitTime(MILLISECONDS.convert(result.getCommitTime(), SECONDS)).withCommitter(gitUser);
         } catch (GitAPIException exception) {
             throw new GitException(exception.getMessage(), exception);
         }
@@ -541,7 +530,7 @@ class JGitConnection implements GitConnection {
                     treeWalk.setFilter(PathFilter.create(request.getFile()));
                     if (!treeWalk.next()) {
                         throw new GitException("fatal: Path '" + request.getFile() + "' does not exist in '"
-                                               + request.getVersion() + "'\n");
+                                               + request.getVersion() + "'" + lineSeparator());
                     }
                     ObjectId objectId = treeWalk.getObjectId(0);
                     ObjectLoader loader = repository.open(objectId);
@@ -659,7 +648,7 @@ class JGitConnection implements GitConnection {
 
                 Revision revision = newDto(Revision.class).withId(commit.getId().getName())
                                                           .withMessage(commit.getFullMessage())
-                                                          .withCommitTime((long)commit.getCommitTime() * 1000)
+                                                          .withCommitTime(MILLISECONDS.convert(commit.getCommitTime(), SECONDS))
                                                           .withCommitter(gitUser);
                 commits.add(revision);
             }
@@ -938,19 +927,19 @@ class JGitConnection implements GitConnection {
 
             if (mergeResult.getConflicts() != null) {
                 StringBuilder message = new StringBuilder(ERROR_PULL_MERGE_CONFLICT_IN_FILES);
-                message.append("\n");
+                message.append(lineSeparator());
                 Map<String, int[][]> allConflicts = mergeResult.getConflicts();
                 for (String path : allConflicts.keySet()) {
-                    message.append(path).append("\n");
+                    message.append(path).append(lineSeparator());
                 }
                 message.append(ERROR_PULL_AUTO_MERGE_FAILED);
                 throw new GitException(message.toString());
             }
         } catch (CheckoutConflictException exception) {
             StringBuilder message = new StringBuilder(ERROR_CHECKOUT_CONFLICT);
-            message.append("\n");
+            message.append(lineSeparator());
             for (String path : exception.getConflictingPaths()) {
-                message.append(path).append("\n");
+                message.append(path).append(lineSeparator());
             }
             message.append(ERROR_PULL_COMMIT_BEFORE_MERGE);
             throw new GitException(message.toString(), exception);
@@ -997,8 +986,8 @@ class JGitConnection implements GitConnection {
             for (PushResult pushResult : list) {
                 Collection<RemoteRefUpdate> refUpdates = pushResult.getRemoteUpdates();
                 for (RemoteRefUpdate remoteRefUpdate : refUpdates) {
-                    if (!remoteRefUpdate.getStatus().equals(RemoteRefUpdate.Status.OK)) {
-                        if (remoteRefUpdate.getStatus().equals(RemoteRefUpdate.Status.UP_TO_DATE)) {
+                    if (!RemoteRefUpdate.Status.OK.equals(remoteRefUpdate.getStatus())) {
+                        if (RemoteRefUpdate.Status.UP_TO_DATE.equals(remoteRefUpdate.getStatus())) {
                             return newDto(PushResponse.class).withCommandOutput("Everything up-to-date");
                         } else {
                             throw new GitException(remoteRefUpdate.getStatus().toString());
@@ -1019,7 +1008,7 @@ class JGitConnection implements GitConnection {
     @Override
     public void remoteAdd(RemoteAddRequest request) throws GitException {
         String remoteName = request.getName();
-        if (remoteName == null || remoteName.isEmpty()) {
+        if (isNullOrEmpty(remoteName)) {
             throw new IllegalArgumentException(ERROR_ADD_REMOTE_NAME_MISSING);
         }
 
@@ -1030,7 +1019,7 @@ class JGitConnection implements GitConnection {
         }
 
         String url = request.getUrl();
-        if (url == null || url.isEmpty()) {
+        if (isNullOrEmpty(url)) {
             throw new IllegalArgumentException(ERROR_REMOTE_URL_MISSING);
         }
 
@@ -1127,7 +1116,7 @@ class JGitConnection implements GitConnection {
     @Override
     public void remoteUpdate(RemoteUpdateRequest request) throws GitException {
         String remoteName = request.getName();
-        if (remoteName == null || remoteName.isEmpty()) {
+        if (isNullOrEmpty(remoteName)) {
             throw new IllegalArgumentException(ERROR_UPDATE_REMOTE_NAME_MISSING);
         }
 

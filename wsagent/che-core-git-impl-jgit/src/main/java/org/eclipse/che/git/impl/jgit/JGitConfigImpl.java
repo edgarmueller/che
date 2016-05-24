@@ -21,6 +21,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+import static java.lang.System.lineSeparator;
+
 /**
  * JGit implementation for Che's git configuration.
  * 
@@ -121,7 +123,7 @@ class JGitConfigImpl extends Config {
         String[] parts = name.split("\\.");
         switch (parts.length) {
         case 1:
-            throw new GitException("error: key does not contain a section: " + name + "\n");
+            throw new GitException("error: key does not contain a section: " + name + lineSeparator());
         case 2:
             key.section = parts[0];
             key.name = parts[1];
