@@ -1136,10 +1136,10 @@ class JGitConnection implements GitConnection {
         List<String> branches = request.getBranches();
         if (!branches.isEmpty()) {
             if (!request.isAddBranches()) {
-                remoteConfig.setFetchRefSpecs(new ArrayList<>());
-                remoteConfig.setPushRefSpecs(new ArrayList<>());
+                remoteConfig.setFetchRefSpecs(Collections.emptyList());
+                remoteConfig.setPushRefSpecs(Collections.emptyList());
             } else {
-                // Replace wildcard refspec if any.
+                // Replace wildcard refSpec if any.
                 remoteConfig.removeFetchRefSpec(
                         new RefSpec(Constants.R_HEADS + "*" + ":" + Constants.R_REMOTES + remoteName + "/*")
                                 .setForceUpdate(true));
@@ -1147,7 +1147,7 @@ class JGitConnection implements GitConnection {
                         new RefSpec(Constants.R_HEADS + "*" + ":" + Constants.R_REMOTES + remoteName + "/*"));
             }
 
-            // Add new refspec.
+            // Add new refSpec.
             for (String branch : branches) {
                 remoteConfig.addFetchRefSpec(
                         new RefSpec(Constants.R_HEADS + branch + ":" + Constants.R_REMOTES + remoteName + "/" + branch)
