@@ -27,8 +27,8 @@ public class SchemaUrlChangedDelegate {
      * of the project being created.
      *
      * @param dataObject
-     *    the {@link ProjectConfigDto} data object that holds the current value
-     *    of the schema URL
+     *         the {@link ProjectConfigDto} data object that holds the current value
+     *         of the schema URL
      */
     public SchemaUrlChangedDelegate(ProjectConfigDto dataObject) {
         this.dataObject = dataObject;
@@ -38,7 +38,7 @@ public class SchemaUrlChangedDelegate {
      * Updates the current value of the schema URL.
      *
      * @param url
-     *    the new URL value
+     *         the new URL value
      */
     public void schemaUrlChanged(String url) {
         dataObject.getAttributes().put(

@@ -29,35 +29,35 @@ import java.util.Map;
  * Line counting is implemented by consuming a RESTful service.
  */
 @Singleton
-public class CountLocAction extends JsonExampleProjectAction {
+public class CountLinesAction extends JsonExampleProjectAction {
 
-    private final AppContext appContext;
+    private final AppContext            appContext;
     private final StringMapUnmarshaller unmarshaller;
-    private AsyncRequestFactory asyncRequestFactory;
-    private NotificationManager notificationManager;
+    private final AsyncRequestFactory   asyncRequestFactory;
+    private final NotificationManager   notificationManager;
 
     /**
      * Constructor
      *
      * @param appContext
-     *    the IDE application context
+     *         the IDE application context
      * @param resources
-     *    the JSON Example resources that contain the action icon
+     *         the JSON Example resources that contain the action icon
      * @param asyncRequestFactory
-     *    asynchronous request factory for creating the server request
+     *         asynchronous request factory for creating the server request
      * @param notificationManager
-     *    the notification manager used to display the lines of code per file
+     *         the notification manager used to display the lines of code per file
      */
     @Inject
-    public CountLocAction(AppContext appContext,
-                          JsonExampleResources resources,
-                          AsyncRequestFactory asyncRequestFactory,
-                          NotificationManager notificationManager) {
+    public CountLinesAction(AppContext appContext,
+                            JsonExampleResources resources,
+                            AsyncRequestFactory asyncRequestFactory,
+                            NotificationManager notificationManager) {
 
         super(appContext,
-                "Count JSON Lines of Code",
-                "Counts lines of code for all JSON Files in the project",
-                resources.icon());
+              "Count JSON Lines of Code",
+              "Counts lines of code for all JSON Files in the project",
+              resources.icon());
 
         this.appContext = appContext;
         this.asyncRequestFactory = asyncRequestFactory;
@@ -69,8 +69,8 @@ public class CountLocAction extends JsonExampleProjectAction {
     public void actionPerformed(ActionEvent e) {
 
         String url = this.appContext.getDevMachine().getWsAgentBaseUrl() + "/json-example/" +
-                this.appContext.getWorkspaceId() +
-                this.appContext.getCurrentProject().getRootProject().getPath();
+                     this.appContext.getWorkspaceId() +
+                     this.appContext.getCurrentProject().getRootProject().getPath();
 
         asyncRequestFactory.createGetRequest(url, false).send(
                 new AsyncRequestCallback<Map<String, String>>(unmarshaller) {
@@ -83,8 +83,7 @@ public class CountLocAction extends JsonExampleProjectAction {
                             notificationManager.notify(
                                     "File " + fileName + " has " + loc + " lines.",
                                     StatusNotification.Status.SUCCESS,
-                                    StatusNotification.DisplayMode.FLOAT_MODE
-                            );
+                                    StatusNotification.DisplayMode.FLOAT_MODE);
                         }
                     }
 
@@ -93,8 +92,7 @@ public class CountLocAction extends JsonExampleProjectAction {
                         notificationManager.notify(
                                 exception.getMessage(),
                                 StatusNotification.Status.FAIL,
-                                StatusNotification.DisplayMode.FLOAT_MODE
-                        );
+                                StatusNotification.DisplayMode.FLOAT_MODE);
                     }
                 });
     }

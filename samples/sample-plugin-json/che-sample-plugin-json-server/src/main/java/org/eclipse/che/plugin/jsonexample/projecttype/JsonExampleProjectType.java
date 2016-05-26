@@ -11,6 +11,7 @@
 package org.eclipse.che.plugin.jsonexample.projecttype;
 
 import com.google.inject.Inject;
+
 import org.eclipse.che.api.project.server.type.ProjectTypeDef;
 import org.eclipse.che.plugin.jsonexample.shared.Constants;
 

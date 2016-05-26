@@ -22,7 +22,7 @@ public interface JsonExampleEditorConfigurationFactory {
      * Create a {@link JsonExampleEditorConfiguration}.
      *
      * @param editor
-     *    the editor
+     *         the editor
      * @return the JSON Example editor configuration
      */
     JsonExampleEditorConfiguration create(TextEditor editor);

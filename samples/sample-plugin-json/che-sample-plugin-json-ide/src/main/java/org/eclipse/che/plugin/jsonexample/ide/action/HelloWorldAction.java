@@ -12,6 +12,7 @@ package org.eclipse.che.plugin.jsonexample.ide.action;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+
 import org.eclipse.che.ide.api.action.ActionEvent;
 import org.eclipse.che.ide.api.app.AppContext;
 import org.eclipse.che.ide.api.notification.NotificationManager;
@@ -29,17 +30,17 @@ public class HelloWorldAction extends JsonExampleProjectAction {
      * Constructor.
      *
      * @param appContext
-     *    the IDE application context
+     *         the IDE application context
      * @param notificationManager
-     *    the notification manager used to display 'Hello World'
+     *         the notification manager used to display 'Hello World'
      */
     @Inject
     public HelloWorldAction(AppContext appContext,
                             NotificationManager notificationManager) {
         super(appContext,
-                "Say Hello World",
-                "Say Hello World Action",
-                null);
+              "Say Hello World",
+              "Say Hello World Action",
+              null);
         this.notificationManager = notificationManager;
     }
 
@@ -49,7 +50,6 @@ public class HelloWorldAction extends JsonExampleProjectAction {
         this.notificationManager.notify(
                 "Hello World",
                 StatusNotification.Status.SUCCESS,
-                StatusNotification.DisplayMode.FLOAT_MODE
-        );
+                StatusNotification.DisplayMode.FLOAT_MODE);
     }
 }

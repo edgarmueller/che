@@ -31,38 +31,37 @@ public abstract class JsonExampleProjectAction extends AbstractPerspectiveAction
 
     /**
      * Constructor.
+     *
      * @param appContext
-     *    the IDE application context
+     *         the IDE application context
      * @param text
-     *    the text of the action
+     *         the text of the action
      * @param description
-     *    the description of the action
+     *         the description of the action
      * @param svgResource
-     *    the icon of the resource
+     *         the icon of the resource
      */
     public JsonExampleProjectAction(AppContext appContext,
                                     @NotNull String text,
                                     @NotNull String description,
                                     @Nullable SVGResource svgResource) {
         super(Collections.singletonList(ProjectPerspective.PROJECT_PERSPECTIVE_ID),
-                text,
-                description,
-                null,
-                svgResource);
+              text,
+              description,
+              null,
+              svgResource);
         this.appContext = appContext;
+    }
+
+    private static boolean isJsonExampleProjectType(CurrentProject currentProject) {
+        return currentProject != null
+               && Constants.JSON_EXAMPLE_PROJECT_TYPE_ID.equals(currentProject.getProjectConfig().getType());
     }
 
     @Override
     public void updateInPerspective(@NotNull ActionEvent event) {
         CurrentProject currentProject = appContext.getCurrentProject();
         event.getPresentation()
-                .setEnabledAndVisible(
-                        isJsonExampleProjectType(currentProject)
-                );
-    }
-
-    private static boolean isJsonExampleProjectType(CurrentProject currentProject) {
-        return currentProject != null
-                && Constants.JSON_EXAMPLE_PROJECT_TYPE_ID.equals(currentProject.getProjectConfig().getType());
+             .setEnabledAndVisible(isJsonExampleProjectType(currentProject));
     }
 }

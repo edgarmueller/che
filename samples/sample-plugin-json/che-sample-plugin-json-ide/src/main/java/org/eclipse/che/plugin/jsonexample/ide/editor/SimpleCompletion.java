@@ -28,8 +28,7 @@ public class SimpleCompletion implements Completion {
         document.replace(
                 document.getCursorOffset(),
                 proposal.length(),
-                proposal
-        );
+                proposal);
     }
 
     @Override

@@ -23,6 +23,7 @@ public class JsonExampleCompletionService {
 
     /**
      * Returns a static list of completable keywords.
+     *
      * @return list of keywords
      */
     @GET

@@ -12,6 +12,7 @@ package org.eclipse.che.plugin.jsonexample.ide.project;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+
 import org.eclipse.che.api.workspace.shared.dto.ProjectConfigDto;
 import org.eclipse.che.ide.api.project.type.wizard.ProjectWizardRegistrar;
 import org.eclipse.che.ide.api.wizard.WizardPage;
@@ -33,7 +34,7 @@ public class JsonExampleProjectWizardRegistrar implements ProjectWizardRegistrar
      * Constructor for JSON Example project wizard.
      *
      * @param schemaUrlWizardPageProvider
-     *    the schema URL wizard page provider
+     *         the schema URL wizard page provider
      */
     @Inject
     public JsonExampleProjectWizardRegistrar(Provider<SchemaUrlWizardPage> schemaUrlWizardPageProvider) {
@@ -53,7 +54,7 @@ public class JsonExampleProjectWizardRegistrar implements ProjectWizardRegistrar
 
     @NotNull
     public List<Provider<? extends WizardPage<ProjectConfigDto>>> getWizardPages() {
-          return wizardPagesProviders;
+        return wizardPagesProviders;
     }
 
 }

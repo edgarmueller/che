@@ -11,12 +11,13 @@
 package org.eclipse.che.plugin.jsonexample.ide;
 
 import com.google.inject.Inject;
+
 import org.eclipse.che.ide.api.action.ActionManager;
 import org.eclipse.che.ide.api.action.DefaultActionGroup;
 import org.eclipse.che.ide.api.extension.Extension;
 import org.eclipse.che.ide.api.icon.Icon;
 import org.eclipse.che.ide.api.icon.IconRegistry;
-import org.eclipse.che.plugin.jsonexample.ide.action.CountLocAction;
+import org.eclipse.che.plugin.jsonexample.ide.action.CountLinesAction;
 import org.eclipse.che.plugin.jsonexample.ide.action.HelloWorldAction;
 
 import static org.eclipse.che.plugin.jsonexample.shared.Constants.JSON_EXAMPLE_CATEGORY;
@@ -31,38 +32,35 @@ public class JsonExampleExtension {
      * Constructor.
      *
      * @param actionManager
-     *    the {@link ActionManager} that is used to register our actions
+     *         the {@link ActionManager} that is used to register our actions
      * @param helloWorldAction
-     *    action to be registered
-     * @param countLocAction
-     *    action to be registered
+     *         action to be registered
+     * @param countLinesAction
+     *         action to be registered
      * @param jsonExampleResources
-     *    the resources that contains our icon
+     *         the resources that contains our icon
      * @param iconRegistry
-     *    the {@link IconRegistry} that is used to register our icon
+     *         the {@link IconRegistry} that is used to register our icon
      */
     @Inject
     public JsonExampleExtension(
             ActionManager actionManager,
             HelloWorldAction helloWorldAction,
-            CountLocAction countLocAction,
+            CountLinesAction countLinesAction,
             JsonExampleResources jsonExampleResources,
             IconRegistry iconRegistry) {
 
-        DefaultActionGroup mainContextMenuGroup = (DefaultActionGroup) actionManager.getAction("resourceOperation");
+        DefaultActionGroup mainContextMenuGroup = (DefaultActionGroup)actionManager.getAction("resourceOperation");
         DefaultActionGroup jsonGroup = new DefaultActionGroup("JSON Example", true, actionManager);
         mainContextMenuGroup.add(jsonGroup);
 
         actionManager.registerAction("jsonExample", jsonGroup);
-        jsonGroup.add(countLocAction);
+        jsonGroup.add(countLinesAction);
 
         actionManager.registerAction("helloWorldAction", helloWorldAction);
         jsonGroup.add(helloWorldAction);
 
         iconRegistry.registerIcon(
-                new Icon(JSON_EXAMPLE_CATEGORY + ".samples.category.icon",
-                        jsonExampleResources.icon()
-                )
-        );
+                new Icon(JSON_EXAMPLE_CATEGORY + ".samples.category.icon", jsonExampleResources.icon()));
     }
 }

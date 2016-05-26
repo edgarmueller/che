@@ -12,6 +12,7 @@ package org.eclipse.che.plugin.jsonexample.ide.editor;
 
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
+
 import org.eclipse.che.ide.api.editor.codeassist.CodeAssistProcessor;
 import org.eclipse.che.ide.api.editor.editorconfig.DefaultTextEditorConfiguration;
 import org.eclipse.che.ide.api.editor.texteditor.TextEditor;
@@ -37,6 +38,5 @@ public class JsonExampleEditorConfiguration extends DefaultTextEditorConfigurati
     public Map<String, CodeAssistProcessor> getContentAssistantProcessors() {
         return codeAssist;
     }
-
 
 }

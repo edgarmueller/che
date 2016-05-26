@@ -11,6 +11,7 @@
 package org.eclipse.che.plugin.jsonexample;
 
 import com.google.inject.Inject;
+
 import org.eclipse.che.api.core.ForbiddenException;
 import org.eclipse.che.api.core.NotFoundException;
 import org.eclipse.che.api.core.ServerException;
@@ -36,26 +37,35 @@ public class JsonLocService {
      * Constructor for the JSON Exapmle lines of code service.
      *
      * @param projectManager
-     *    the {@link ProjectManager} that is used to access the project resources
+     *         the {@link ProjectManager} that is used to access the project resources
      */
     @Inject
     public JsonLocService(ProjectManager projectManager) {
         this.projectManager = projectManager;
     }
 
+    private static int countLines(FileEntry fileEntry) throws ServerException, ForbiddenException {
+        String content = fileEntry.getVirtualFile().getContentAsString();
+        String[] lines = content.split("\r\n|\r|\n");
+        return lines.length;
+    }
+
+    private static boolean isJsonFile(FileEntry fileEntry) {
+        return fileEntry.getName().endsWith("json");
+    }
+
     /**
      * Count LOC for all JSON files within the given project.
      *
      * @param projectPath
-     *    the path to the project that contains the JSON files for which to calculate the LOC
+     *         the path to the project that contains the JSON files for which to calculate the LOC
      * @return a Map mapping the file name to their respective LOC value
-     *
      * @throws ServerException
-     *    in case the server encounters an error
+     *         in case the server encounters an error
      * @throws NotFoundException
-     *    in case the project couldn't be found
+     *         in case the project couldn't be found
      * @throws ForbiddenException
-     *    in case the operation is forbidden
+     *         in case the operation is forbidden
      */
     @GET
     @Path("{projectPath}")
@@ -72,15 +82,5 @@ public class JsonLocService {
         }
 
         return linesPerFile;
-    }
-
-    private static int countLines(FileEntry fileEntry) throws ServerException, ForbiddenException {
-        String content = fileEntry.getVirtualFile().getContentAsString();
-        String[] lines = content.split("\r\n|\r|\n");
-        return lines.length;
-    }
-
-    private static boolean isJsonFile(FileEntry fileEntry) {
-        return fileEntry.getName().endsWith("json");
     }
 }

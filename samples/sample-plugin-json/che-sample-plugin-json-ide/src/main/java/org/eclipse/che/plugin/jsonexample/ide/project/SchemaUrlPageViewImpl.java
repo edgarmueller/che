@@ -24,22 +24,15 @@ import com.google.inject.Inject;
  */
 class SchemaUrlPageViewImpl extends Composite implements SchemaUrlPageView {
 
-    /**
-     * UI binder for our page.
-     */
-    interface JsonExamplePageViewUiBinder extends UiBinder<DockLayoutPanel, SchemaUrlPageViewImpl> {
-    }
-
     @UiField
     TextBox schemaUrl;
-
     private SchemaUrlChangedDelegate delegate;
 
     /**
      * Constructor.
      *
      * @param uiBinder
-     *    the UI binder that initializes the page
+     *         the UI binder that initializes the page
      */
     @Inject
     public SchemaUrlPageViewImpl(JsonExamplePageViewUiBinder uiBinder) {
@@ -56,10 +49,16 @@ class SchemaUrlPageViewImpl extends Composite implements SchemaUrlPageView {
      * Update handler for the schema URL field.
      *
      * @param event
-     *    the event that caused the schemaUrl field to update
+     *         the event that caused the schemaUrl field to update
      */
     @UiHandler("schemaUrl")
     void onSchemaUrlChanged(KeyUpEvent event) {
         delegate.schemaUrlChanged(schemaUrl.getValue());
+    }
+
+    /**
+     * UI binder for our page.
+     */
+    interface JsonExamplePageViewUiBinder extends UiBinder<DockLayoutPanel, SchemaUrlPageViewImpl> {
     }
 }

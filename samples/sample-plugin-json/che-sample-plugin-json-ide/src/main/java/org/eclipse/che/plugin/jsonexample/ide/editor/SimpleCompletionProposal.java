@@ -11,6 +11,7 @@
 package org.eclipse.che.plugin.jsonexample.ide.editor;
 
 import com.google.gwt.user.client.ui.Widget;
+
 import org.eclipse.che.ide.api.editor.codeassist.CompletionProposal;
 import org.eclipse.che.ide.api.icon.Icon;
 import org.eclipse.che.plugin.jsonexample.ide.JsonExampleResources;
@@ -25,8 +26,9 @@ public class SimpleCompletionProposal implements CompletionProposal {
 
     /**
      * Constructor.
+     *
      * @param proposal
-     *    the actual proposal
+     *         the actual proposal
      */
     public SimpleCompletionProposal(String proposal) {
         this.proposal = proposal;

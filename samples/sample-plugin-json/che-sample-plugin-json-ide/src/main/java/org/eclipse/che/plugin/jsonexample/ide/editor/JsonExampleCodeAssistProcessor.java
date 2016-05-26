@@ -12,6 +12,7 @@ package org.eclipse.che.plugin.jsonexample.ide.editor;
 
 
 import com.google.inject.Inject;
+
 import org.eclipse.che.ide.api.editor.codeassist.CodeAssistCallback;
 import org.eclipse.che.ide.api.editor.codeassist.CodeAssistProcessor;
 import org.eclipse.che.ide.api.editor.codeassist.CompletionProposal;
@@ -29,22 +30,23 @@ import java.util.List;
  */
 public class JsonExampleCodeAssistProcessor implements CodeAssistProcessor {
 
-    private JsonExampleCodeAssistClient   client;
-    private Unmarshallable<List<String>> unmarshaller;
-    private NotificationManager notificationManager;
+    private final JsonExampleCodeAssistClient  client;
+    private final Unmarshallable<List<String>> unmarshaller;
+    private final NotificationManager          notificationManager;
 
     /**
      * Constructor.
+     *
      * @param client
-     *    the client for retrieving completions
+     *         the client for retrieving completions
      * @param notificationManager
-     *    the notification manager that is used for displaying
-     *    any errors in case computing completions fails
-      */
+     *         the notification manager that is used for displaying
+     *         any errors in case computing completions fails
+     */
     @Inject
     public JsonExampleCodeAssistProcessor(final JsonExampleCodeAssistClient client,
                                           final NotificationManager notificationManager
-    ) {
+                                         ) {
         this.client = client;
         this.unmarshaller = new StringListUnmarshaller();
         this.notificationManager = notificationManager;
@@ -57,8 +59,7 @@ public class JsonExampleCodeAssistProcessor implements CodeAssistProcessor {
         proposals.addAll(Arrays.asList(
                 new SimpleCompletionProposal("firstName"),
                 new SimpleCompletionProposal("lastName"),
-                new SimpleCompletionProposal("age")
-        ));
+                new SimpleCompletionProposal("age")));
 
         client.computeProposals(
                 new AsyncRequestCallback<List<String>>(unmarshaller) {

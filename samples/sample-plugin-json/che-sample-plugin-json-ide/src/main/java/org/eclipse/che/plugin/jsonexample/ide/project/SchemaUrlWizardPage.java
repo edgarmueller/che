@@ -12,6 +12,7 @@ package org.eclipse.che.plugin.jsonexample.ide.project;
 
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.google.inject.Inject;
+
 import org.eclipse.che.api.workspace.shared.dto.ProjectConfigDto;
 import org.eclipse.che.ide.api.wizard.AbstractWizardPage;
 
@@ -26,7 +27,7 @@ public class SchemaUrlWizardPage extends AbstractWizardPage<ProjectConfigDto> {
      * Constructor.
      *
      * @param view
-     *    the view to be displayed.
+     *         the view to be displayed.
      */
     @Inject
     public SchemaUrlWizardPage(SchemaUrlPageViewImpl view) {

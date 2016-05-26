@@ -23,7 +23,7 @@ public interface JsonExampleCodeAssistProcessorFactory {
      * Create a {@link JsonExampleCodeAssistProcessor}.
      *
      * @param editor
-     *    the editor
+     *         the editor
      * @return the JSON Example specific code assist processor
      */
     JsonExampleCodeAssistProcessor create(EditorPartPresenter editor);

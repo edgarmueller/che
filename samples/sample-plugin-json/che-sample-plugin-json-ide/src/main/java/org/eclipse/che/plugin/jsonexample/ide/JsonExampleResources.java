@@ -12,6 +12,7 @@ package org.eclipse.che.plugin.jsonexample.ide;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.resources.client.ClientBundle;
+
 import org.vectomatic.dom.svg.ui.SVGResource;
 
 public interface JsonExampleResources extends ClientBundle {

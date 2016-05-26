@@ -23,16 +23,16 @@ import javax.inject.Inject;
  */
 public class JsonExampleEditorProvider implements EditorProvider {
 
-    private final DefaultTextEditorProvider editorProvider;
-    private JsonExampleEditorConfigurationFactory editorConfigurationFactory;
+    private final DefaultTextEditorProvider             editorProvider;
+    private final JsonExampleEditorConfigurationFactory editorConfigurationFactory;
 
     /**
      * Constructor.
      *
      * @param editorProvider
-     *    the {@link DefaultTextEditorProvider}
+     *         the {@link DefaultTextEditorProvider}
      * @param editorConfigurationFactory
-     *    the JSON Example Editor configuration factory
+     *         the JSON Example Editor configuration factory
      */
     @Inject
     public JsonExampleEditorProvider(final DefaultTextEditorProvider editorProvider,

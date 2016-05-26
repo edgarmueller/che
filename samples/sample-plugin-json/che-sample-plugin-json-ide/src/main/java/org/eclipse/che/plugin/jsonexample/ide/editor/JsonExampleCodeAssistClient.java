@@ -12,6 +12,7 @@ package org.eclipse.che.plugin.jsonexample.ide.editor;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+
 import org.eclipse.che.ide.api.app.AppContext;
 import org.eclipse.che.ide.rest.AsyncRequestCallback;
 import org.eclipse.che.ide.rest.AsyncRequestFactory;
@@ -25,26 +26,25 @@ import java.util.List;
 @Singleton
 public class JsonExampleCodeAssistClient {
 
-    private final AppContext appContext;
-    private AsyncRequestFactory asyncRequestFactory;
-    private LoaderFactory loaderFactory;
+    private final AppContext          appContext;
+    private final AsyncRequestFactory asyncRequestFactory;
+    private final LoaderFactory       loaderFactory;
 
     /**
      * Constructor.
      *
      * @param appContext
-     *    the IDE application context
+     *         the IDE application context
      * @param asyncRequestFactory
-     *    asynchronous request factory for creating the server request
+     *         asynchronous request factory for creating the server request
      * @param loaderFactory
-     *    the loader factory for displaying a message during loading
+     *         the loader factory for displaying a message during loading
      */
     @Inject
     public JsonExampleCodeAssistClient(
             AppContext appContext,
             AsyncRequestFactory asyncRequestFactory,
-            LoaderFactory loaderFactory
-    ) {
+            LoaderFactory loaderFactory) {
         this.appContext = appContext;
         this.asyncRequestFactory = asyncRequestFactory;
         this.loaderFactory = loaderFactory;

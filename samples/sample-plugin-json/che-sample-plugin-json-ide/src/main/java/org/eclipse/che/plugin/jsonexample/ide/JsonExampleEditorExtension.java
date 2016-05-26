@@ -12,6 +12,7 @@ package org.eclipse.che.plugin.jsonexample.ide;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+
 import org.eclipse.che.ide.api.editor.EditorRegistry;
 import org.eclipse.che.ide.api.extension.Extension;
 import org.eclipse.che.ide.api.filetypes.FileType;
@@ -27,11 +28,11 @@ public class JsonExampleEditorExtension {
      * Constructor.
      *
      * @param editorRegistry
-     *    the {@link EditorRegistry} for registering our editor
+     *         the {@link EditorRegistry} for registering our editor
      * @param jsonFile
-     *    the {@link FileType} that is associated with our editor
+     *         the {@link FileType} that is associated with our editor
      * @param editorProvider
-     *    the editor provider
+     *         the editor provider
      */
     @Inject
     public JsonExampleEditorExtension(final EditorRegistry editorRegistry,

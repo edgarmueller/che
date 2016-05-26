@@ -11,6 +11,7 @@
 package org.eclipse.che.plugin.jsonexample.generator;
 
 import com.google.common.io.Closeables;
+
 import org.eclipse.che.api.core.ConflictException;
 import org.eclipse.che.api.core.ForbiddenException;
 import org.eclipse.che.api.core.ServerException;

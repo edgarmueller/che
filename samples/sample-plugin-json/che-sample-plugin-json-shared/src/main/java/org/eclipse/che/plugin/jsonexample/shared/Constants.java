@@ -18,12 +18,12 @@ public final class Constants {
     /**
      * Language attribute name.
      */
-    public static final String LANGUAGE                = "language";
+    public static final String LANGUAGE = "language";
 
     /**
      * Language attribute value.
      */
-    public static final String JSON_EXAMPLE_LANG       = "json";
+    public static final String JSON_EXAMPLE_LANG = "json";
 
     /**
      * JSON Example Project Type ID.
@@ -33,7 +33,7 @@ public final class Constants {
     /**
      * JSON Example Category.
      */
-    public static final String JSON_EXAMPLE_CATEGORY      = "JSON Example";
+    public static final String JSON_EXAMPLE_CATEGORY = "JSON Example";
 
     /**
      * JSON Schema reference attribute name.
