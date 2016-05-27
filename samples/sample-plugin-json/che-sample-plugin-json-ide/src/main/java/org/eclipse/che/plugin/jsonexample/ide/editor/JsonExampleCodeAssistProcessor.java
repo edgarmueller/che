@@ -32,23 +32,19 @@ public class JsonExampleCodeAssistProcessor implements CodeAssistProcessor {
 
     private final JsonExampleCodeAssistClient  client;
     private final Unmarshallable<List<String>> unmarshaller;
-    private final NotificationManager          notificationManager;
+    private       String                       errorMessage;
 
     /**
      * Constructor.
      *
      * @param client
      *         the client for retrieving completions
-     * @param notificationManager
-     *         the notification manager that is used for displaying
-     *         any errors in case computing completions fails
      */
     @Inject
-    public JsonExampleCodeAssistProcessor(final JsonExampleCodeAssistClient client,
-                                          final NotificationManager notificationManager) {
+    public JsonExampleCodeAssistProcessor(final JsonExampleCodeAssistClient client) {
         this.client = client;
         this.unmarshaller = new StringListUnmarshaller();
-        this.notificationManager = notificationManager;
+        this.errorMessage = null;
     }
 
     @Override
@@ -64,6 +60,8 @@ public class JsonExampleCodeAssistProcessor implements CodeAssistProcessor {
                 new AsyncRequestCallback<List<String>>(unmarshaller) {
                     @Override
                     protected void onSuccess(List<String> additionalProposals) {
+                        errorMessage = null;
+
                         for (String additionalProposal : additionalProposals) {
                             proposals.add(new SimpleCompletionProposal(additionalProposal));
                         }
@@ -72,13 +70,13 @@ public class JsonExampleCodeAssistProcessor implements CodeAssistProcessor {
 
                     @Override
                     protected void onFailure(Throwable exception) {
-                        notificationManager.notify(exception.getMessage());
+                        errorMessage = exception.getMessage();
                     }
                 });
     }
 
     @Override
     public String getErrorMessage() {
-        return null;
+        return errorMessage;
     }
 }

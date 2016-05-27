@@ -10,8 +10,6 @@
  *******************************************************************************/
 package org.eclipse.che.plugin.jsonexample.generator;
 
-import com.google.common.io.Closeables;
-
 import org.eclipse.che.api.core.ConflictException;
 import org.eclipse.che.api.core.ForbiddenException;
 import org.eclipse.che.api.core.ServerException;
@@ -19,6 +17,7 @@ import org.eclipse.che.api.project.server.FolderEntry;
 import org.eclipse.che.api.project.server.handlers.CreateProjectHandler;
 import org.eclipse.che.api.project.server.type.AttributeValue;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
@@ -38,18 +37,13 @@ public class JsonExampleCreateProjectHandler implements CreateProjectHandler {
                                 Map<String, String> options)
             throws ForbiddenException, ConflictException, ServerException {
 
-        InputStream packageJson = null;
-        InputStream personJson = null;
-        try {
+        try (InputStream packageJson = getClass().getClassLoader().getResourceAsStream("files/default_package");
+             InputStream personJson = getClass().getClassLoader().getResourceAsStream("files/default_person")) {
             FolderEntry myJsonFiles = baseFolder.createFolder("myJsonFiles");
-            packageJson = getClass().getClassLoader().getResourceAsStream("files/default_package");
-            personJson = getClass().getClassLoader().getResourceAsStream("files/default_person");
-
             baseFolder.createFile(FILE_NAME, packageJson);
             myJsonFiles.createFile("person.json", personJson);
-        } finally {
-            Closeables.closeQuietly(packageJson);
-            Closeables.closeQuietly(personJson);
+        } catch (IOException ioEx) {
+            throw new ServerException(ioEx.getLocalizedMessage(), ioEx);
         }
     }
 
