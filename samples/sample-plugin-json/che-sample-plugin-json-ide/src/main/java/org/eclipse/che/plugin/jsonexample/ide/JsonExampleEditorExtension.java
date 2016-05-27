@@ -40,5 +40,4 @@ public class JsonExampleEditorExtension {
                                       final JsonExampleEditorProvider editorProvider) {
         editorRegistry.registerDefaultEditor(jsonFile, editorProvider);
     }
-
 }

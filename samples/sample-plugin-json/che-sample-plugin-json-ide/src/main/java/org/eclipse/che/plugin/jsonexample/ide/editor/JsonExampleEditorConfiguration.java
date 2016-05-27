@@ -38,5 +38,4 @@ public class JsonExampleEditorConfiguration extends DefaultTextEditorConfigurati
     public Map<String, CodeAssistProcessor> getContentAssistantProcessors() {
         return codeAssist;
     }
-
 }

@@ -23,6 +23,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Deserializer for list of strings.
+ */
 public class StringListUnmarshaller implements Unmarshallable<List<String>> {
 
     private List<String> payload;

@@ -41,6 +41,5 @@ public final class Constants {
     public static final String JSON_EXAMPLE_SCHEMA_REF_ATTRIBUTE = "json-schem-ref";
 
     private Constants() {
-        // private constructor
     }
 }

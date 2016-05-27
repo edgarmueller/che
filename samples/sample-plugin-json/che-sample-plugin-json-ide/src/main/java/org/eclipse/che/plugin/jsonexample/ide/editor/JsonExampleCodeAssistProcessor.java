@@ -45,8 +45,7 @@ public class JsonExampleCodeAssistProcessor implements CodeAssistProcessor {
      */
     @Inject
     public JsonExampleCodeAssistProcessor(final JsonExampleCodeAssistClient client,
-                                          final NotificationManager notificationManager
-                                         ) {
+                                          final NotificationManager notificationManager) {
         this.client = client;
         this.unmarshaller = new StringListUnmarshaller();
         this.notificationManager = notificationManager;
